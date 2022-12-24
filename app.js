@@ -20,23 +20,32 @@ app.get("/", function (req, res) {
 
   paramString = paramString.slice(0, paramString.length - 1);
   const fullUrl = `${url}?${paramString}`;
-  console.log(fullUrl);
 
   https.get(fullUrl, function (response) {
     response.on("data", function (data) {
       const weatherData = JSON.parse(data);
-      console.log(weatherData.main);
+      const temp = weatherData.main.temp;
+      const desc = weatherData.weather[0].description;
+      const icon = weatherData.weather[0].icon;
+      const imgURL = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+
+      res.write("<h1>Weather API App</h1>");
+      res.write(`<p>Request made at: ${fullUrl}</p>`);
+      res.write(`<p>Status code: ${res.statusCode}</p>`);
+      res.write(`<p>The temperature in ${weatherData.name} is: ${temp} &deg;C</p>`);
+      res.write(`<p>The weather is currently '${desc}'</p>`);
+      res.write(`<img src="${imgURL}" alt="weather-icon">`);
+      res.write(`<p>Complete data:</p><ul>`);
+      
+      for (const [k, v] of Object.entries(weatherData)) {
+        res.write(`<li>${k}: ${JSON.stringify(v)}</li>`);
+
+      }
+
+      res.write(`</ul>`);
+      res.send();
     });
   });
-
-  //res.sendFile(__dirname + "/index.html");
-  res.send(
-    `<h1>Weather API App</h1>
-    <p>Request made at: ${fullUrl}</p>
-    <p>Status code: ${res.statusCode}</p>
-    <p>Data:</p>`
-    // <p>${JSON.stringify(weatherData)}</p>
-  );
 });
 
 const port = 3000;
