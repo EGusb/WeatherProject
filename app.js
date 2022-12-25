@@ -7,19 +7,11 @@ const app = express();
 
 app.get("/", function (req, res) {
   const url = "https://api.openweathermap.org/data/2.5/weather";
-  const params = {
-    appid: process.env.WEATHER_APPID,
-    q: "resistencia",
-    units: "metric",
-  };
+  const apiKey = process.env.WEATHER_APPID;
+  const query = "resistencia";
+  const units = "metric";
 
-  let paramString = "";
-  for (const [key, value] of Object.entries(params)) {
-    paramString += `${key}=${value}&`;
-  }
-
-  paramString = paramString.slice(0, paramString.length - 1);
-  const fullUrl = `${url}?${paramString}`;
+  const fullUrl = `${url}?appid=${apiKey}&q=${query}&units=${units}`;  
 
   https.get(fullUrl, function (response) {
     response.on("data", function (data) {
